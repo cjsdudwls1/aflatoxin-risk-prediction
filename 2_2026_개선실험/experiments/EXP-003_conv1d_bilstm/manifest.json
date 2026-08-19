@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-003_conv1d_bilstm",
+  "started_at": "2026-05-22T18:49:49.486936+00:00",
+  "elapsed_sec": 427.26028418540955,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-001_baseline",
+  "changed": [
+    "archi: BiLSTM only -> Conv1D(5)+Conv1D(3)+BN -> BiLSTM"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": 0.7900000214576721,
+    "roc_auc": 0.6906513954954036,
+    "pr_auc": 0.03919095582579993,
+    "f2": 0.16728624535315986,
+    "f1": 0.140625,
+    "precision": 0.1111111111111111,
+    "recall": 0.19148936170212766,
+    "accuracy": 0.9909338168631007,
+    "confusion_matrix": {
+      "tn": 12014,
+      "fp": 72,
+      "fn": 38,
+      "tp": 9
+    }
+  },
+  "notes": "Conv1D 로 local pattern 캡쳐 후 BiLSTM 입력"
+}

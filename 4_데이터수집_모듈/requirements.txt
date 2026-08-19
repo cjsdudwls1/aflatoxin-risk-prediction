@@ -1,0 +1,13 @@
+# 아플라톡신 데이터 수집 모듈 의존성
+# 설치:  pip install -r requirements.txt
+#
+# (파이썬 3.9 이상 권장. 윈도우/PowerShell 에서 테스트됨)
+
+requests>=2.28      # 공공데이터포털 OpenAPI 호출(HTTP 통신)
+pandas>=1.5         # 표(DataFrame) 처리 및 CSV 입출력
+numpy>=1.23         # 수치 배열(60일 결합 시 인덱싱/평탄화)
+scipy>=1.9          # cKDTree(가장 가까운 관측소를 빠르게 찾기)
+PyYAML>=6.0         # config.yaml(설정/키 파일) 읽기
+
+# 참고: joblib 는 현재 코드에서 쓰지 않습니다(단일 루프로 충분).
+#       시료가 수십만 건으로 커져 결합을 병렬화할 때만 추가하세요.

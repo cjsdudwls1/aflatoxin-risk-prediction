@@ -1,0 +1,93 @@
+C18:L4: #       (실제 fit/transform 호출은 아래 모델링 셀의 preprocess() 함수 내부에서 수행)
+C18:L12: def fit_target_mean(df_train, group_col='교차_조합', target_col='JDGMNT_WORD_NAME_encoded', m=20.0):
+C18:L16:     Micci-Barreca (2001) SIGKDD Explor. 3(1), 27-32. m=20 = sklearn TargetEncoder >=1.3 empirical-Bayes default.
+C18:L40: print("            실제 fit은 preprocess() 안의 fit_target_mean 호출에서 일어남.")
+C25:L112: def weighted_binary_crossentropy(pos_weight=None):
+C25:L114:     #   기존 default 50 의존 시 호출처 미명시 → silent 4× minority underweight (calculate_pos_weight
+C25:L116:     assert pos_weight is not None, (
+C25:L117:         "weighted_binary_crossentropy: pos_weight must be explicitly provided "
+C25:L118:         "(use calculate_pos_weight(y_train) for raw class imbalance)"
+C25:L124:     # underflow/overflow 차단. pos_weight ≈ 293 (D-008 fix 후 raw 0.5% 불균형 보존) 영역에서
+C25:L130:                 labels=y, logits=y_pred, pos_weight=pos_weight
+C25:L136: def calculate_pos_weight(y_train):
+C25:L139:     pos_weight = neg_count / pos_count
+C25:L142:     print(f"  불균형 비율: 1:{pos_weight:.1f}, pos_weight: {pos_weight:.2f}")
+C25:L143:     return float(pos_weight)
+C25:L179: #  logs['val_f2_grid_max'] 에 저장. EarlyStopping / ReduceLROnPlateau monitor 가
+C25:L186:     EarlyStopping(restore_best_weights=True) 의 best epoch 가 보고 metric 정의와 일치하게 됨.
+C25:L245: def fit_target_mean(df_train, group_col='교차_조합', target_col='JDGMNT_WORD_NAME_encoded', m=20.0):
+C25:L246:     # [DEFECT-020 fix] m-estimate smoothing (Micci-Barreca 2001, m=20 = sklearn TargetEncoder empirical-Bayes default).
+C25:L266: #   - train_and_evaluate 내부 calculate_pos_weight 가 pos_weight≈neg/pos 자동 산출
+C25:L267: #   - DEFECT-012 (pos_weight=1.0), DEFECT-013 (dummy 50% prior) 동시 부산물 해소
+C25:L272: def preprocess(X_ts, X_lm, y, n_features=10, timesteps=50, random_state=42,
+C25:L276:     [DEFECT-001 fix] train/val/test 3-way split (70/15/15) — val 로 EarlyStopping/임계치 결정,
+C25:L279:                      (pos_weight = neg/pos 비율, train_and_evaluate 내부 calculate_pos_weight)
+C25:L281:                      자동 부산물: DEFECT-012 (pos_weight=1.0) / DEFECT-013 (dummy 50% prior).
+C25:L353:     cross_mean, fallback = fit_target_mean(df_train_for_tm,
+C25:L406:     #   class weighting (pos_weight) 으로 minority 처리: train_and_evaluate 내부에서
+C25:L407:     #   calculate_pos_weight(y_train) 이 자동 산출 → DEFECT-012 동시 해소.
+C25:L436: def build_hybrid_model(n_timestamps, n_features_ts, n_tab_features,
+C25:L437:                        lstm_units=64, fnn_units=[64, 32],
+C25:L438:                        dropout=0.1, learning_rate=1e-4,
+C25:L439:                        loss_type='weighted_bce', pos_weight=None):
+C25:L441:     # [EXP-012_kernel7] Conv1D kernel grid: 1번째 커널 5 -> 7 (2번째 3 유지), same padding — 분석 근거 reports/커널크기_설계근거.md
+C25:L442:     x = layers.Conv1D(64, kernel_size=7, padding='same', activation='relu',
+C25:L443:                       kernel_regularizer=tf.keras.regularizers.l2(0.001))(ts_input)
+C25:L445:     x = layers.Conv1D(64, kernel_size=3, padding='same', activation='relu',
+C25:L446:                       kernel_regularizer=tf.keras.regularizers.l2(0.001))(x)
+C25:L448:     x = layers.Bidirectional(layers.LSTM(lstm_units, return_sequences=True,
+C25:L449:                                          kernel_regularizer=tf.keras.regularizers.l2(0.001)))(x)
+C25:L451:     x = layers.Dropout(dropout)(x)
+C25:L452:     x = layers.Bidirectional(layers.LSTM(lstm_units // 2, return_sequences=True,
+C25:L453:                                          kernel_regularizer=tf.keras.regularizers.l2(0.001)))(x)
+C25:L456:     att_out = layers.Dropout(dropout)(att_out)
+C25:L459:     t = layers.Dense(fnn_units[0], activation='relu',
+C25:L460:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(tab_input)
+C25:L462:     t = layers.Dropout(dropout)(t)
+C25:L463:     t = layers.Dense(fnn_units[1], activation='relu',
+C25:L464:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(t)
+C25:L466:     t = layers.Dropout(dropout)(t)
+C25:L469:     m = layers.Dense(64, activation='relu',
+C25:L470:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(merged)
+C25:L472:     m = layers.Dropout(dropout)(m)
+C25:L475:     output = layers.Dense(1, activation=None)(m)
+C25:L478:     opt = optimizers.Adam(learning_rate, clipnorm=1.0)
+C25:L482:         #   build_model_v2_split_input 외부 직접 호출 시 pos_weight 미명시 차단.
+C25:L483:         #   train_and_evaluate L495 calculate_pos_weight(y_train) 산출 → L500 명시 전달 path 무영향.
+C25:L484:         assert pos_weight is not None, (
+C25:L486:             "pos_weight must be explicitly provided "
+C25:L487:             "(use calculate_pos_weight(y_train) for raw class imbalance)"
+C25:L489:         loss_fn = weighted_binary_crossentropy(pos_weight=pos_weight)
+C25:L490:         print(f"\n[손실] Weighted BCE (pos_weight={pos_weight:.2f})")
+C25:L525: def train_and_evaluate(X_ts_train, X_tab_train, y_train,
+C25:L528:                        epochs=50, batch_size=256,
+C25:L531:     [DEFECT-001 fix] val 로 EarlyStopping + ReduceLROnPlateau + threshold tuning,
+C25:L538:     pos_weight = calculate_pos_weight(y_train)
+C25:L539:     # [EXP-010 CV / EXP-004 v2 fix#3] augment 로 인한 pos_weight silent dilution 차단 — raw 강제
+C25:L541:         pos_weight = float(globals()['EXP004_RAW_POS_WEIGHT'])
+C25:L542:         print(f'[EXP-010 CV] pos_weight raw 강제 fix: {pos_weight:.2f}')
+C25:L544:     model = build_hybrid_model(n_timestamps=X_ts_train.shape[1],
+C25:L548:                                pos_weight=pos_weight)
+C25:L552:     # → EarlyStopping/ReduceLROnPlateau 의 monitor 만 임계치 비의존 'val_pr_auc'(불균형 적합)
+C25:L558:     es = callbacks.EarlyStopping(monitor='val_pr_auc', patience=10, mode='max',
+C25:L560:     rl = callbacks.ReduceLROnPlateau(monitor='val_pr_auc', factor=0.5, patience=5,
+C25:L561:                                      mode='max', min_lr=1e-7, verbose=1)
+C25:L573:         epochs=epochs, batch_size=batch_size,
+C25:L832:     #   scale-first(+-5%) -> noise(sigma=0.02), no-wrap edge-pad time-shift, X_tab num-cols jitter
+C25:L833:     def _ts_augment_positives_v2(Xts, Xtab, y, n_copies=2, seed=42, n_tab_num=4):
+C25:L840:         for _k in range(n_copies):
+C25:L841:             scale = rng.uniform(0.95, 1.05, (Xts_pos.shape[0], 1, Xts_pos.shape[2])).astype(Xts_pos.dtype)
+C25:L843:             noise = rng.normal(0, 0.02, Xts_pos.shape).astype(Xts_pos.dtype)
+C25:L844:             x_aug = x_scaled + noise
+C25:L856:             tab_noise = rng.normal(0, 0.02, (Xtab_pos.shape[0], n_tab_num)).astype(Xtab_pos.dtype)
+C25:L857:             xtab_aug[:, n_onehot:] = xtab_aug[:, n_onehot:] + tab_noise
+C25:L887:          X_ts_te, X_tab_te, y_te) = preprocess(
+C25:L893:         # [EXP-004 v2 fix#3] augment 전 raw pos_weight 저장 (train_and_evaluate hook 이 사용)
+C25:L896:         print(f"[EXP-010 CV] fold raw pos_weight: {globals()['EXP004_RAW_POS_WEIGHT']:.2f} (neg={_raw_neg}, pos={_raw_pos})")
+C25:L899:         X_ts_tr, X_tab_tr, y_tr = _ts_augment_positives_v2(X_ts_tr, X_tab_tr, y_tr, n_copies=2, seed=42, n_tab_num=4)
+C25:L906:             epochs=50, batch_size=256, loss_type="weighted_bce",
+C25:L935:     print("[EXP-010] 5-fold CV summary (EXP-009 config: Conv1D+BiLSTM, dropout 0.1, ts_aug v2)")
+C25:L948:                 "config": "kernel grid: Conv1D k7+k3 (base EXP-011 k5+k3); same padding",
+C27:L47:     plt.xlim([0.0, 1.0]); plt.ylim([0.0, 1.05])
+C28:L127: n_epochs = len(next(iter(history_json.values()), []))
+C28:L128: print(f"    history epochs : {n_epochs}")

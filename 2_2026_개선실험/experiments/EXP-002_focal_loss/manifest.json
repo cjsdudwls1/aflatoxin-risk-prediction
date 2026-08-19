@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-002_focal_loss",
+  "started_at": "2026-05-22T18:44:14.882040+00:00",
+  "elapsed_sec": 135.5302050113678,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-001_baseline",
+  "changed": [
+    "loss: weighted_bce -> focal(alpha=0.75, gamma=2)"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": 0.550000011920929,
+    "roc_auc": 0.6297474482520659,
+    "pr_auc": 0.006164759484424255,
+    "f2": 0.0,
+    "f1": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "accuracy": 0.9956317481249485,
+    "confusion_matrix": {
+      "tn": 12080,
+      "fp": 6,
+      "fn": 47,
+      "tp": 0
+    }
+  },
+  "notes": "Focal loss 로 어려운 양성 sample 에 집중"
+}

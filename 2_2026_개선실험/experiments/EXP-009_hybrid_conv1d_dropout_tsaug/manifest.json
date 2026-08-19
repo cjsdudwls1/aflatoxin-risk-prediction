@@ -1,0 +1,33 @@
+{
+  "exp_id": "EXP-009_hybrid_conv1d_dropout_tsaug",
+  "started_at": "2026-05-23T07:34:36.402510+00:00",
+  "elapsed_sec": 411.31340503692627,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-001_baseline",
+  "changed": [
+    "archi: Conv1D(k=5)+Conv1D(k=3)+BN x2 -> BiLSTM",
+    "hyper: dropout 0.3 -> 0.1",
+    "data: ts_aug v2 fix8 (raw pos_weight, no_wrap edge_pad, xtab num jitter, scale_first, n_copies=2, sigma=0.02, scale 0.95~1.05)"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": 0.9900000095367432,
+    "roc_auc": 0.6908080740508624,
+    "pr_auc": 0.18481209725606762,
+    "f2": 0.25229357798165136,
+    "f1": 0.2857142857142857,
+    "precision": 0.36666666666666664,
+    "recall": 0.23404255319148937,
+    "accuracy": 0.9954669084315503,
+    "confusion_matrix": {
+      "tn": 12067,
+      "fp": 19,
+      "fn": 36,
+      "tp": 11
+    }
+  },
+  "notes": "EXP-003 + EXP-008 + EXP-004 v2 hybrid. Top-3 audit PASS technique union."
+}

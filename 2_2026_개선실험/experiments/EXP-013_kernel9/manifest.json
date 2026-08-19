@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-013_kernel9",
+  "started_at": "2026-06-12T03:18:02.018846+00:00",
+  "elapsed_sec": 1915.0006392002106,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-011_cv5_same_padding",
+  "changed": [
+    "ts-branch conv1 kernel_size 5->9 (2nd stays 3)"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": null,
+    "roc_auc": null,
+    "pr_auc": null,
+    "f2": null,
+    "f1": null,
+    "precision": null,
+    "recall": null,
+    "accuracy": null,
+    "confusion_matrix": {
+      "tn": null,
+      "fp": null,
+      "fn": null,
+      "tp": null
+    }
+  },
+  "notes": "kernel grid #2; base EXP-011"
+}

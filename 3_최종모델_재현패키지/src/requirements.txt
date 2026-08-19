@@ -1,0 +1,47 @@
+# Lightning AI GPU 학습 환경용 requirements
+# 대상 노트북:
+#   1.데이터 전처리+2.EDA.ipynb
+#   2. 특성공학.ipynb
+#   3. 모델링.ipynb
+#
+# Lightning AI Studio (Linux + CUDA 12.x) 가정.
+# 설치: pip install -r requirements.txt
+# GPU 미사용 환경에서는 tensorflow[and-cuda] 대신 tensorflow 만 설치 가능.
+
+# === 핵심 ML 스택 ===
+# tensorflow 2.15는 CUDA 12.2 빌드, F2Score(tf.keras.metrics.Metric) 호환.
+# tensorflow 2.16+은 Keras 3 통합으로 metric 직렬화 동작이 달라질 수 있어 보수적으로 2.15 핀.
+tensorflow[and-cuda]==2.15.1
+
+# scikit-learn 1.5는 imbalanced-learn 0.13과 ABI 호환 확인됨.
+# 1.8.x는 _safe_tags 제거로 imblearn 0.12.x를 깨뜨려 본 환경에서 발생한 ImportError 원인이었음.
+scikit-learn==1.5.2
+
+# imbalanced-learn 0.13: SMOTENC 정상, sklearn 1.5.x 호환.
+imbalanced-learn==0.13.0
+
+# === 데이터 / 수치 ===
+# numpy 2.x는 다수 ML 라이브러리(특히 tensorflow 2.15, lightgbm 등)와 충돌. 1.26 고정.
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.13.1
+
+# === 트리 모델 ===
+xgboost==2.1.3
+lightgbm==4.5.0
+
+# === 시각화 ===
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# === IO / 노트북 ===
+openpyxl==3.1.5
+jupyter==1.1.1
+ipykernel==6.29.5
+notebook==7.2.2
+
+# === 한글 폰트 (Linux 환경에서 NanumGothic 자동 적용) ===
+# Lightning AI Studio Ubuntu 이미지에 NanumGothic이 없을 수 있으므로
+# 노트북 실행 전 OS 레벨 설치를 권장:
+#   apt-get install -y fonts-nanum && fc-cache -fv
+# pip 패키지 matplotlib는 자동 인식.

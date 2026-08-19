@@ -1,0 +1,47 @@
+{
+  "exp_id": "EXP-001_baseline",
+  "started_at": "2026-05-22T00:53:44+00:00",
+  "elapsed_sec": 152.9,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "git_commit_short": "b4f7af0",
+  "base_exp": null,
+  "changed": [
+    "DEFECT-014/015 fix: TF 결정성 환경변수(PYTHONHASHSEED, TF_DETERMINISTIC_OPS, TF_CUDNN_DETERMINISTIC) 를 nbconvert subprocess 환경에 주입",
+    "D-008 fix: SMOTE 제거",
+    "한글 폰트 처리(font_helper.py) 적용",
+    "기타 audit findings 적용 (Critical-1, A-M1, B-M3, B-M5)"
+  ],
+  "data": {
+    "input_file": "data/processed/df_enhanced.parquet",
+    "n_train": 56617,
+    "n_val": 12133,
+    "n_test": 12133,
+    "pos_train": 222,
+    "pos_val": 47,
+    "pos_test": 47,
+    "pos_ratio": 0.00387
+  },
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11.12",
+    "gpu": "NVIDIA L4 (23GB)",
+    "elapsed_sec": 152.9
+  },
+  "summary_metrics": {
+    "best_threshold": 0.73,
+    "roc_auc": 0.6827,
+    "pr_auc": 0.0126,
+    "f2": 0.0457,
+    "f1": 0.0321,
+    "precision": 0.0214,
+    "recall": 0.0638,
+    "accuracy": 0.9851,
+    "confusion_matrix": {
+      "tn": 11949,
+      "fp": 137,
+      "fn": 44,
+      "tp": 3
+    }
+  },
+  "notes": "F-01_M-01 baseline. Recall 0.064 (양성 47개 중 3개만 잡음). 다음 실험들의 비교 기준점."
+}

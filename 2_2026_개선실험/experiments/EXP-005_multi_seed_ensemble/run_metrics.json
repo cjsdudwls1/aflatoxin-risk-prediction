@@ -1,0 +1,29 @@
+{
+  "env_meta": {
+    "timestamp_utc": "2026-05-22T19:17:38.119073+00:00",
+    "host": {
+      "platform": "Linux-4.4.0-x86_64-with-glibc2.36",
+      "python": "3.11.12"
+    },
+    "env_vars": {
+      "PYTHONHASHSEED": "42",
+      "TF_DETERMINISTIC_OPS": "1",
+      "TF_CUDNN_DETERMINISTIC": "1"
+    },
+    "nvidia_smi": "Fri May 22 19:17:38 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA L4                      On  |   00000000:80:00.0 Off |                    0 |\n| N/A   75C    P0             34W /   72W |   21074MiB /  23034MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A               1      C   /bin/dumb-init                        21066MiB |\n+-----------------------------------------------------------------------------------------+\n"
+  },
+  "split_info": {
+    "n_train": 56617,
+    "pos_train": 222,
+    "pos_ratio_train": 0.003921083773424943,
+    "n_val": 12133,
+    "pos_val": 47,
+    "pos_ratio_val": 0.0038737327948570014,
+    "n_test": 12133,
+    "pos_test": 47,
+    "pos_ratio_test": 0.0038737327948570014
+  },
+  "history": {},
+  "metrics": {},
+  "threshold_curve": {}
+}

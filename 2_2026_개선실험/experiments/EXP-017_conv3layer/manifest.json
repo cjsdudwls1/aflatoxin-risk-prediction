@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-017_conv3layer",
+  "started_at": "2026-06-12T10:26:56.360874+00:00",
+  "elapsed_sec": 1513.820384502411,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-012_kernel7",
+  "changed": [
+    "conv: k7+k3 (2-layer) -> k7+k3+k3 (3-layer, add 3rd k3 conv+BN)"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": null,
+    "roc_auc": null,
+    "pr_auc": null,
+    "f2": null,
+    "f1": null,
+    "precision": null,
+    "recall": null,
+    "accuracy": null,
+    "confusion_matrix": {
+      "tn": null,
+      "fp": null,
+      "fn": null,
+      "tp": null
+    }
+  },
+  "notes": "depth ablation: one more conv layer. 3-layer vs 2-layer(EXP-012). reviewer 'deeper=better?' rebuttal"
+}

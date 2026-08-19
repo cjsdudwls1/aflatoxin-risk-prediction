@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-011_cv5_same_padding",
+  "started_at": "2026-05-26T10:24:56.905856+00:00",
+  "elapsed_sec": 1987.5770654678345,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-010_cv5_hybrid",
+  "changed": [
+    "Conv1D padding: causal -> same"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": null,
+    "roc_auc": null,
+    "pr_auc": null,
+    "f2": null,
+    "f1": null,
+    "precision": null,
+    "recall": null,
+    "accuracy": null,
+    "confusion_matrix": {
+      "tn": null,
+      "fp": null,
+      "fn": null,
+      "tp": null
+    }
+  },
+  "notes": "EXP-010_cv5_hybrid 복제. Conv1D 2층 padding만 causal->same 정정 + 주석 동기화. 닫힌 50일 창 many-to-one 분류에서 BiLSTM과 모순되는 dead causal 제약 제거. 모델/데이터/CV 프로토콜 동일."
+}

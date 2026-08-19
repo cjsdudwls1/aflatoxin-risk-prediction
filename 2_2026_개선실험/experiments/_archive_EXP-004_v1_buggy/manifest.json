@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-004_ts_augmentation",
+  "started_at": "2026-05-22T20:41:28.656851+00:00",
+  "elapsed_sec": null,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-001_baseline",
+  "changed": [
+    "data_aug: jitter(0.05)+scale(0.9-1.1)+time-shift(±2), 양성 train x4"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": 0.9399999976158142,
+    "roc_auc": 0.7043370032497597,
+    "pr_auc": 0.06267613226702323,
+    "f2": 0.13071895424836602,
+    "f1": 0.09696969696969697,
+    "precision": 0.06779661016949153,
+    "recall": 0.1702127659574468,
+    "accuracy": 0.9877194428418363,
+    "confusion_matrix": {
+      "tn": 11976,
+      "fp": 110,
+      "fn": 39,
+      "tp": 8
+    }
+  },
+  "notes": "양성 222 -> 1110 (4x augment), test-time 원본 그대로"
+}

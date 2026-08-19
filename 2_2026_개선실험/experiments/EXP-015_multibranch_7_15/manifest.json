@@ -1,0 +1,31 @@
+{
+  "exp_id": "EXP-015_multibranch_7_15",
+  "started_at": "2026-06-12T03:18:53.353118+00:00",
+  "elapsed_sec": 1962.5628333091736,
+  "git_commit": "b4f7af02e7c8f7521314c9cb80e4d67ec229ade4",
+  "base_exp": "EXP-011_cv5_same_padding",
+  "changed": [
+    "ts-branch: parallel Conv1D k7 & k15 -> concat -> k3 mix (replaces k5+k3)"
+  ],
+  "runtime": {
+    "platform": "Modal GPU L4",
+    "python": "3.11"
+  },
+  "summary_metrics": {
+    "best_threshold": null,
+    "roc_auc": null,
+    "pr_auc": null,
+    "f2": null,
+    "f1": null,
+    "precision": null,
+    "recall": null,
+    "accuracy": null,
+    "confusion_matrix": {
+      "tn": null,
+      "fp": null,
+      "fn": null,
+      "tp": null
+    }
+  },
+  "notes": "multi-kernel #2; base EXP-011; data-driven: humidity separation U-shaped"
+}

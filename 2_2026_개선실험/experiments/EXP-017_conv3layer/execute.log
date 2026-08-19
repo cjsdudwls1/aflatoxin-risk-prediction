@@ -1,0 +1,81 @@
+=== exp_id=EXP-017_conv3layer ===
+=== nvidia-smi ===
+Fri Jun 12 10:01:11 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      On  |   00000000:61:00.0 Off |                    0 |
+| N/A   35C    P8             16W /   72W |       0MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+=== cmd ===
+jupyter nbconvert --to notebook --execute /work/run/notebook.ipynb --output /work/outputs/EXP-017_conv3layer/notebook.executed.ipynb --ExecutePreprocessor.timeout=3600 --ExecutePreprocessor.kernel_name=python3
+=== returncode=0 elapsed=1513.8s ===
+=== stdout ===
+
+=== stderr ===
+[NbConvertApp] Converting notebook /work/run/notebook.ipynb to notebook
+[NbConvertApp] ERROR | Notebook JSON is invalid: Additional properties are not allowed ('id' was unexpected)
+
+Failed validating 'additionalProperties' in code_cell:
+
+On instance['cells'][28]:
+{'cell_type': 'code',
+ 'execution_count': None,
+ 'id': 'a26cb4ea',
+ 'metadata': {'execution': {'iopub.execute_input': '2026-05-26T10:24:29.554579Z',
+                            'iopub.status.busy': '2026-05-26T10:24:29.553258Z',
+                            'iopub.status.idle': '2026-05-26T10:24:29.740485Z',
+                            'shell.execute_reply': '2026-05-26T10:24:29.739690Z'}},
+ 'outputs': ['...0 outputs...'],
+ 'source': '# === [run logging] 논문 reproducibility 용 metric/메타데이터 JSON dump '
+           '...'}
+2026-06-12 10:01:19.898437: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-06-12 10:01:19.898595: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-06-12 10:01:19.900350: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-06-12 10:01:19.909642: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-06-12 10:01:21.437542: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+2026-06-12 10:01:25.129283: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.334057: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.337557: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.345097: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.348071: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.350861: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.475708: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.477501: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.479625: I tensorflow/core/common_runtime/gpu/gpu_device.cc:2022] Could not identify NUMA node of platform GPU id 0, defaulting to 0.  Your kernel may not have been built with NUMA support.
+2026-06-12 10:01:25.479915: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:887] could not open file to read NUMA node: /sys/bus/pci/devices/0000:61:00.0/numa_node
+Your kernel may have been built without NUMA support.
+2026-06-12 10:01:25.481543: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 20833 MB memory:  -> device: 0, name: NVIDIA L4, pci bus id: 0000:61:00.0, compute capability: 8.9
+2026-06-12 10:01:25.912962: I external/local_tsl/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2026-06-12 10:01:38.941889: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8904
+2026-06-12 10:01:39.558449: I external/local_tsl/tsl/platform/default/subprocess.cc:304] Start cannot spawn child process: No such file or directory
+2026-06-12 10:01:42.714126: I external/local_xla/xla/service/service.cc:168] XLA service 0x2aa88179c700 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2026-06-12 10:01:42.714193: I external/local_xla/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA L4, Compute Capability 8.9
+2026-06-12 10:01:42.722458: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1781258502.816863      66 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+[NbConvertApp] Writing 8852072 bytes to /work/outputs/EXP-017_conv3layer/notebook.executed.ipynb
+

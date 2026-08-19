@@ -1,0 +1,130 @@
+436: def build_hybrid_model(n_timestamps, n_features_ts, n_tab_features,
+437:                        lstm_units=64, fnn_units=[64, 32],
+438:                        dropout=0.1, learning_rate=1e-4,
+439:                        loss_type='weighted_bce', pos_weight=None):
+440:     ts_input = layers.Input(shape=(n_timestamps, n_features_ts), name='ts_input')
+441:     # [EXP-012_kernel7] Conv1D kernel grid: 1번째 커널 5 -> 7 (2번째 3 유지), same padding — 분석 근거 reports/커널크기_설계근거.md
+442:     x = layers.Conv1D(64, kernel_size=7, padding='same', activation='relu',
+443:                       kernel_regularizer=tf.keras.regularizers.l2(0.001))(ts_input)
+444:     x = layers.BatchNormalization()(x)
+445:     x = layers.Conv1D(64, kernel_size=3, padding='same', activation='relu',
+446:                       kernel_regularizer=tf.keras.regularizers.l2(0.001))(x)
+447:     x = layers.BatchNormalization()(x)
+448:     x = layers.Bidirectional(layers.LSTM(lstm_units, return_sequences=True,
+449:                                          kernel_regularizer=tf.keras.regularizers.l2(0.001)))(x)
+450:     x = layers.BatchNormalization()(x)
+451:     x = layers.Dropout(dropout)(x)
+452:     x = layers.Bidirectional(layers.LSTM(lstm_units // 2, return_sequences=True,
+453:                                          kernel_regularizer=tf.keras.regularizers.l2(0.001)))(x)
+454:     x = layers.BatchNormalization()(x)
+455:     att_out = AttentionLayer()(x)
+456:     att_out = layers.Dropout(dropout)(att_out)
+457: 
+458:     tab_input = layers.Input(shape=(n_tab_features,), name='tab_input')
+459:     t = layers.Dense(fnn_units[0], activation='relu',
+460:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(tab_input)
+461:     t = layers.BatchNormalization()(t)
+462:     t = layers.Dropout(dropout)(t)
+463:     t = layers.Dense(fnn_units[1], activation='relu',
+464:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(t)
+465:     t = layers.BatchNormalization()(t)
+466:     t = layers.Dropout(dropout)(t)
+467: 
+468:     merged = layers.Concatenate()([att_out, t])
+469:     m = layers.Dense(64, activation='relu',
+470:                      kernel_regularizer=tf.keras.regularizers.l2(0.001))(merged)
+471:     m = layers.BatchNormalization()(m)
+472:     m = layers.Dropout(dropout)(m)
+473:     # [DEFECT-016 fix] activation=None → logit z 출력 (BCE-with-logits stable form 입력).
+474:     # inference 시 scipy.special.expit / tf.sigmoid 로 확률 복원. metric/loss 모두 logit 호환 처리.
+475:     output = layers.Dense(1, activation=None)(m)
+476: 
+477:     model = models.Model(inputs=[ts_input, tab_input], outputs=output)
+478:     opt = optimizers.Adam(learning_rate, clipnorm=1.0)
+479: 
+===== AUGMENT BLOCK =====
+825:     from sklearn.metrics import (
+826:         roc_auc_score as _ra, average_precision_score as _ap,
+827:         fbeta_score as _fb, precision_score as _ps, recall_score as _rs,
+828:         confusion_matrix as _cm,
+829:     )
+830: 
+831:     # [EXP-004 v2 fix#1,#2,#4,#5,#6,#7,#8] 양성 시계열 augment
+832:     #   scale-first(+-5%) -> noise(sigma=0.02), no-wrap edge-pad time-shift, X_tab num-cols jitter
+833:     def _ts_augment_positives_v2(Xts, Xtab, y, n_copies=2, seed=42, n_tab_num=4):
+834:         rng = np.random.RandomState(seed)
+835:         y = np.asarray(y)
+836:         pos = (y == 1)
+837:         Xts_pos = Xts[pos]; Xtab_pos = Xtab[pos]; y_pos = y[pos]
+838:         n_tab_total = Xtab_pos.shape[1]; n_onehot = n_tab_total - n_tab_num
+839:         aug_ts, aug_tab, aug_y = [], [], []
+840:         for _k in range(n_copies):
+841:             scale = rng.uniform(0.95, 1.05, (Xts_pos.shape[0], 1, Xts_pos.shape[2])).astype(Xts_pos.dtype)
+842:             x_scaled = Xts_pos * scale
+843:             noise = rng.normal(0, 0.02, Xts_pos.shape).astype(Xts_pos.dtype)
+844:             x_aug = x_scaled + noise
+845:             shift = rng.randint(-2, 3, size=Xts_pos.shape[0])
+846:             for r, s in enumerate(shift):
+847:                 if s > 0:
+848:                     pad = np.tile(x_aug[r, 0:1, :], (s, 1))
+849:                     x_aug[r] = np.concatenate([pad, x_aug[r, :-s, :]], axis=0)
+850:                 elif s < 0:
+851:                     sa = -s
+852:                     pad = np.tile(x_aug[r, -1:, :], (sa, 1))
+853:                     x_aug[r] = np.concatenate([x_aug[r, sa:, :], pad], axis=0)
+854:             aug_ts.append(x_aug)
+855:             xtab_aug = Xtab_pos.copy()
+856:             tab_noise = rng.normal(0, 0.02, (Xtab_pos.shape[0], n_tab_num)).astype(Xtab_pos.dtype)
+857:             xtab_aug[:, n_onehot:] = xtab_aug[:, n_onehot:] + tab_noise
+858:             aug_tab.append(xtab_aug); aug_y.append(y_pos)
+859:         Xts_new = np.concatenate([Xts] + aug_ts, axis=0)
+860:         Xtab_new = np.concatenate([Xtab] + aug_tab, axis=0)
+861:         y_new = np.concatenate([y] + aug_y, axis=0)
+862:         idx = rng.permutation(len(y_new))
+863:         return Xts_new[idx], Xtab_new[idx], y_new[idx]
+864: 
+865:     # ----- 인덱스 정합 (positional .iloc 위해 reset) -----
+866:     X_lm_cv = X_lm.reset_index(drop=True) if hasattr(X_lm, "reset_index") else pd.DataFrame(X_lm).reset_index(drop=True)
+867:     y_cv = y.reset_index(drop=True) if hasattr(y, "reset_index") else pd.Series(np.asarray(y))
+868:     full_idx = np.arange(len(y_cv))
+869: 
+870:     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+871:     fold_results = []
+872:     for fold_i, (trainval_idx, test_idx) in enumerate(skf.split(full_idx, y_cv)):
+873:         print("\n" + "=" * 70)
+874:         print(f"[FOLD {fold_i + 1}/5]  trainval={len(trainval_idx)}, test={len(test_idx)}")
+875:         print("=" * 70)
+876:         set_seeds(42 + fold_i)
+877:         globals()["CV_FOLD_IDX"] = fold_i + 1  # [fix] npz fold별 저장용
+878: 
+879:         # trainval -> train/val (val ~= 전체의 15% => trainval(80%) 기준 test_size=0.1875)
+880:         tr_idx, vl_idx = _tts(
+881:             trainval_idx, test_size=0.1875,
+882:             stratify=y_cv.iloc[trainval_idx], random_state=42 + fold_i,
+883:         )
+884: 
+885:         (X_ts_tr, X_tab_tr, y_tr,
+886:          X_ts_vl, X_tab_vl, y_vl,
+887:          X_ts_te, X_tab_te, y_te) = preprocess(
+888:             X_ts, X_lm_cv, y_cv, n_features=10, timesteps=50,
+889:             random_state=42 + fold_i,
+890:             train_idx=tr_idx, val_idx=vl_idx, test_idx=test_idx,
+891:         )
+892: 
+893:         # [EXP-004 v2 fix#3] augment 전 raw pos_weight 저장 (train_and_evaluate hook 이 사용)
+894:         _raw_neg = int((np.asarray(y_tr) == 0).sum()); _raw_pos = int((np.asarray(y_tr) == 1).sum())
+895:         globals()["EXP004_RAW_POS_WEIGHT"] = float(_raw_neg) / float(_raw_pos) if _raw_pos > 0 else 1.0
+896:         print(f"[EXP-010 CV] fold raw pos_weight: {globals()['EXP004_RAW_POS_WEIGHT']:.2f} (neg={_raw_neg}, pos={_raw_pos})")
+897: 
+898:         # augment train only (val/test 는 절대 augment 안 함)
+899:         X_ts_tr, X_tab_tr, y_tr = _ts_augment_positives_v2(X_ts_tr, X_tab_tr, y_tr, n_copies=2, seed=42, n_tab_num=4)
+900:         print(f"[EXP-010 CV] augmented train: shape={np.asarray(y_tr).shape}, pos={int(np.asarray(y_tr).sum())}")
+901: 
+902:         model, y_prob_test, _bdf, best_th = train_and_evaluate(
+903:             X_ts_tr, X_tab_tr, y_tr,
+904:             X_ts_vl, X_tab_vl, y_vl,
+905:             X_ts_te, X_tab_te, y_te,
+906:             epochs=50, batch_size=256, loss_type="weighted_bce",
+907:         )
+908: 
+909:         y_te_arr = np.asarray(y_te)
